@@ -1,4 +1,3 @@
-
 import {
   Box,
   Button,
@@ -7,12 +6,20 @@ import {
   Text,
   VStack,
   useToast,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Avatar,
+  Flex,
+  Spacer,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth, db } from "../lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { getTodayQuestion } from "../utils/questionBank";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
@@ -20,6 +27,7 @@ export default function Home() {
   const [question, setQuestion] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const toast = useToast();
+  const navigate = useNavigate();
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -33,13 +41,15 @@ export default function Home() {
         if (snapshot.exists()) {
           setHasSubmitted(true);
         }
+      } else {
+        navigate("/login");
       }
     });
 
     getTodayQuestion().then(setQuestion);
 
     return () => unsubscribe();
-  }, []);
+  }, [navigate, today]);
 
   const handleSubmit = async () => {
     if (!user || !answer.trim()) return;
@@ -64,21 +74,25 @@ export default function Home() {
     setHasSubmitted(true);
   };
 
-  if (!user) {
-    return (
-      <Box p={8} textAlign="center">
-        <Heading mb={4}>Welcome to OurMind</Heading>
-        <Text mb={6}>Please sign in to start journaling.</Text>
-        <Button onClick={() => window.location.href = "/login"}>
-          Go to Login
-        </Button>
-      </Box>
-    );
-  }
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/login");
+  };
 
   return (
     <Box p={6}>
-      <Heading mb={4}>Daily Journal</Heading>
+      <Flex align="center" mb={4}>
+        <Heading>Daily Journal</Heading>
+        <Spacer />
+        {user && (
+          <Menu>
+            <MenuList>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </MenuList>
+          </Menu>
+        )}
+      </Flex>
+
       <Text fontSize="lg" mb={4}>{question}</Text>
 
       {hasSubmitted ? (

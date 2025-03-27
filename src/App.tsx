@@ -28,6 +28,7 @@ import Groups from "./pages/Groups";
 import GroupFeed from "./pages/GroupFeed";
 import Settings from "./pages/Settings";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
 
 import { auth } from "./lib/firebase";
 import { signOut, onAuthStateChanged, User } from "firebase/auth";
@@ -124,7 +125,7 @@ function TopNav() {
             onClick={toggleColorMode}
             variant="ghost"
           />
-          {user && <ProfileMenu />}
+          {user && <ProfileMenu user={user} />}
         </>
       )}
     </HStack>
@@ -154,7 +155,8 @@ function AppContent() {
           <TopNav />
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Login />} />
+              <Route path="/home" element={<PrivateRoute element={<Home />} />} />
               <Route path="/groups" element={<PrivateRoute element={<Groups />} />} />
               <Route path="/groups/:groupId" element={<PrivateRoute element={<GroupFeed />} />} />
               <Route path="/settings" element={<PrivateRoute element={<Settings />} />} />
