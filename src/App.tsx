@@ -1,9 +1,8 @@
+
 import {
   Box,
   HStack,
   IconButton,
-  Avatar,
-  Button,
   useColorMode,
   useBreakpointValue,
   Menu,
@@ -21,7 +20,9 @@ import {
 } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { SettingsIcon, MoonIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { FaHome, FaUsers, FaSignOutAlt } from "react-icons/fa";
+import { FaPen, FaUsers, FaSignOutAlt } from "react-icons/fa";
+import PrivateRoute from "./components/PrivateRoute";
+import ProfileMenu from "./components/ProfileMenu";
 
 import Groups from "./pages/Groups";
 import GroupFeed from "./pages/GroupFeed";
@@ -55,8 +56,8 @@ function TopNav() {
   return (
     <HStack position="fixed" top={4} right={4} spacing={2} zIndex={1000}>
       <IconButton
-        aria-label="Home"
-        icon={<FaHome />}
+        aria-label="Daily Question"
+        icon={<FaPen />}
         onClick={() => navigate("/")}
         variant="ghost"
       />
@@ -97,15 +98,6 @@ function TopNav() {
                 _hover={{ bg: "gray.600" }}
               />
               <MotionMenuItem
-                icon={<Avatar size="2xs" name={user?.email || "User"} />}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.15 }}
-                bg="gray.700"
-                borderRadius="md"
-                _hover={{ bg: "gray.600" }}
-              />
-              <MotionMenuItem
                 icon={<FaSignOutAlt />}
                 onClick={handleLogout}
                 initial={{ opacity: 0, x: 10 }}
@@ -132,18 +124,7 @@ function TopNav() {
             onClick={toggleColorMode}
             variant="ghost"
           />
-          {user && (
-            <>
-              <Avatar
-                size="sm"
-                name={user.displayName || user.email || "User"}
-                src={user.photoURL || undefined}
-              />
-              <Button size="sm" onClick={handleLogout} leftIcon={<FaSignOutAlt />}>
-                Logout
-              </Button>
-            </>
-          )}
+          {user && <ProfileMenu />}
         </>
       )}
     </HStack>
@@ -174,9 +155,9 @@ function AppContent() {
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={<Home />} />
-              <Route path="/groups" element={<Groups />} />
-              <Route path="/groups/:groupId" element={<GroupFeed />} />
-              <Route path="/settings" element={<Settings />} />
+              <Route path="/groups" element={<PrivateRoute element={<Groups />} />} />
+              <Route path="/groups/:groupId" element={<PrivateRoute element={<GroupFeed />} />} />
+              <Route path="/settings" element={<PrivateRoute element={<Settings />} />} />
             </Routes>
           </AnimatePresence>
         </Box>
