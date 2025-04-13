@@ -10,6 +10,7 @@ import {
   MenuList,
   MenuItem,
   Flex,
+  Image
 } from "@chakra-ui/react";
 import {
   BrowserRouter as Router,
@@ -55,7 +56,16 @@ function TopNav() {
   const MotionMenuItem = motion(MenuItem);
 
   return (
+
     <HStack position="fixed" top={4} right={4} spacing={2} zIndex={1000}>
+      <Image
+        src="/ourmind-logo.png"
+        alt="OurMind Logo"
+        boxSize="40px"
+        objectFit="contain"
+        cursor="pointer"
+        onClick={() => navigate("/")} // optional if you want clicking logo to go home
+      />
       <IconButton
         aria-label="Daily Question"
         icon={<FaPen />}
